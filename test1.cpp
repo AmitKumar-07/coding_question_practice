@@ -8,8 +8,6 @@ using namespace std;
 class Solution
 {
     public:
-	//Function to detect cycle in a directed graph.
-	//dfs
 // 	bool solve(int node,vector<bool> &vist,vector<bool> &rec,vector<int> adj[])
 // 	{
 	   

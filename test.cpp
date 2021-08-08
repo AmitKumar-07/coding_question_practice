@@ -2,31 +2,73 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-// A utility function to get the maximum of two integers
-int max(int a, int b) { return (a > b)? a : b;}
-
-/* Returns the best obtainable price for a rod of length n and
-price[] as prices of different pieces */
-int cutRod(int price[], int n)
-{
-if (n <= 0)
-	return 0;
-int max_val = INT_MAX;
-
-// Recursively cut the rod in different pieces and compare different
-// configurations
-for (int i = 0; i<n; i++)
-		max_val = min(max_val, price[i] + cutRod(price, n-i-1));
-
-return max_val;
-}
-
-/* Driver program to test above functions */
-int main()
-{
-	int arr[] = {1, 5, 8, 9, 10, 17, 17, 20};
-	int size = sizeof(arr)/sizeof(arr[0]);
-	printf("Maximum Obtainable Value is %dn", cutRod(arr, size));
-	getchar();
-	return 0;
-}
+class Solution {
+public:
+    void print(vector<int>& arr){
+        for(int i=0;i<arr.size();i++){
+            cout<<arr[i]<<" ";
+        }
+        cout<<endl;
+    }
+    int countPalindromicSubsequences(string str) {
+        //count distinct palindromic subsequences;
+        int size=str.size();
+        vector<int> prev(size);
+        vector<int> next(size);
+        unordered_map<char,int> map;
+        vector<vector<int >> dp(size,vector<int>(size));
+        int mod=1000000007;
+        //previous
+        for(int i=0;i<size;i++){
+            if(map.find(str[i])!=map.end()){
+                
+                prev[i]=map[str[i]];
+            }
+            else{
+                prev[i]=-1;
+            }
+            map[str[i]]=i; 
+        }
+        map.clear();
+        //next
+        for(int i=size-1;i>=0;i--){
+            if(map.find(str[i]) != map.end()){
+                next[i]=map[str[i]] ;
+            }
+            else{
+                next[i]=-1;
+            }
+            map[str[i]]=i;
+            
+        }
+        
+        for(int gap=0;gap<size;gap++){
+            for(int row=0,col=gap;col<size;row++,col++){
+                if(gap==0){
+                    dp[row][col]=1;
+                }
+                else if(gap==1){
+                    dp[row][col]=2;
+                }
+                else{
+                    if(str[row]!=str[col]){
+                        dp[row][col]=(((dp[row][col-1]+dp[row+1][col])%mod) -dp[row+1][col-1]+mod)%mod;
+                    }
+                    else{
+                        if(next[row]> prev[col]){
+                            dp[row][col]=(((2*dp[row+1][col-1])%mod)+2)%mod; 
+                        }
+                        else if(next[row]==prev[col]){
+                            dp[row][col]=(((2*dp[row+1][col-1])%mod)+1)%mod;
+                        }
+                        else if(next[row]!=prev[col]){
+                            dp[row][col]=(((2*dp[row+1][col-1])%mod) - dp[next[row]+1][prev[col]-1]+mod)%mod;
+                        }
+                    }
+                }
+            }
+        }
+        
+        return dp[0][size-1];
+    }
+};

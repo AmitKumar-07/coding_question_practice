@@ -1,74 +1,73 @@
-// A Naive recursive solution for Rod cutting problem
-#include<bits/stdc++.h>
 using namespace std;
-
-class Solution {
-public:
-    void print(vector<int>& arr){
-        for(int i=0;i<arr.size();i++){
-            cout<<arr[i]<<" ";
-        }
-        cout<<endl;
+#define MAX 50
+bool isvalid(int x, int y, int n)
+{
+    if(x>=0&&x<n&&y>=0&&y<n)
+    {
+        return true;
     }
-    int countPalindromicSubsequences(string str) {
-        //count distinct palindromic subsequences;
-        int size=str.size();
-        vector<int> prev(size);
-        vector<int> next(size);
-        unordered_map<char,int> map;
-        vector<vector<int >> dp(size,vector<int>(size));
-        int mod=1000000007;
-        //previous
-        for(int i=0;i<size;i++){
-            if(map.find(str[i])!=map.end()){
-                
-                prev[i]=map[str[i]];
-            }
-            else{
-                prev[i]=-1;
-            }
-            map[str[i]]=i; 
+    return false;
+}
+void help(int a[MAX][MAX], int n)
+{
+    int dx[]={-1,0,1,0};
+    int dy[]={0,1,0,-1};
+    map<pair<int,int>,int> dist;
+    for(int i=0;i<n;i++)
+    {
+        for(auto j=0;j<n;j++)
+        {
+            dist[make_pair(i,j)]=INT_MAX;
         }
-        map.clear();
-        //next
-        for(int i=size-1;i>=0;i--){
-            if(map.find(str[i]) != map.end()){
-                next[i]=map[str[i]] ;
-            }
-            else{
-                next[i]=-1;
-            }
-            map[str[i]]=i;
-            
-        }
-        
-        for(int gap=0;gap<size;gap++){
-            for(int row=0,col=gap;col<size;row++,col++){
-                if(gap==0){
-                    dp[row][col]=1;
-                }
-                else if(gap==1){
-                    dp[row][col]=2;
-                }
-                else{
-                    if(str[row]!=str[col]){
-                        dp[row][col]=(((dp[row][col-1]+dp[row+1][col])%mod) -dp[row+1][col-1]+mod)%mod;
-                    }
-                    else{
-                        if(next[row]> prev[col]){
-                            dp[row][col]=(((2*dp[row+1][col-1])%mod)+2)%mod; 
-                        }
-                        else if(next[row]==prev[col]){
-                            dp[row][col]=(((2*dp[row+1][col-1])%mod)+1)%mod;
-                        }
-                        else if(next[row]!=prev[col]){
-                            dp[row][col]=(((2*dp[row+1][col-1])%mod) - dp[next[row]+1][prev[col]-1]+mod)%mod;
-                        }
-                    }
-                }
-            }
-        }
-        
-        return dp[0][size-1];
     }
-};
+    set<pair<int,pair<int,int>>> s;
+    s.insert(make_pair(a[0][0],make_pair(0,0)));
+    dist[make_pair(0,0)]=a[0][0];
+    while(!s.empty())
+    {
+        pair<int,pair<int,int>>p=*(s.begin());
+        int weight = p.first;
+        pair<int,int> coordinate = p.second;
+        s.erase(s.begin());
+        for(int i=0;i<4;i++)
+        {
+            int xset = coordinate.first+dx[i];
+            int yset = coordinate.second+dy[i];
+            if(isvalid(xset,yset,n))
+            {
+        if(weight+a[xset][yset]<dist[make_pair(xset,yset)])
+                {
+    auto l= s.find(make_pair(dist[make_pair(xset,yset)],make_pair(xset,yset)));
+                    if(l!=s.end())
+                    {
+                        s.erase(l);
+                    }
+                    s.insert(make_pair(weight+a[xset][yset],make_pair(xset,yset)));
+                    dist[make_pair(xset,yset)]=weight+a[xset][yset];
+                }
+            }
+        }
+    }
+    cout<<dist[make_pair(n-1,n-1)]<<endl;
+}
+int main()
+ {
+	//code
+	int t;
+	cin>>t;
+	while(t--)
+	{
+	    int n;
+        int a[MAX][MAX];
+        cin >> n;
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                cin >> a[i][j];
+            }
+        }
+        help(a, n);
+	}
+	return 0;
+}

@@ -31,7 +31,7 @@ void help(int a[MAX][MAX], int n)
         s.erase(s.begin());
         for(int i=0;i<4;i++)
         {
-            int xset = coordinate.first+dx[i];
+          
             int yset = coordinate.second+dy[i];
             if(isvalid(xset,yset,n))
             {
